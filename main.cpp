@@ -66,101 +66,101 @@ void analyze();
 
 // Main
 int main() {
-	// Input expression
-	std::ios::sync_with_stdio(false);
-	std::cout << "Input expression: ";
-	std::cin >> input;
+    // Input expression
+    std::ios::sync_with_stdio(false);
+    std::cout << "Input expression: ";
+    std::cin >> input;
 
-	// Validating
-	if (!validate())
-		return 0;
+    // Validating
+    if (!validate())
+        return 0;
 
-	// Analyzing
-	analyze();
+    // Analyzing
+    analyze();
 
-	return 0;
+    return 0;
 }
 
 // Validate input
 // O(N)
 bool validate() {
-	for (auto &i : input)
+    for (auto &i : input)
         // Check character
-		if (!isupper(i) && i != '(' && i != ')' && i != '+' && i != '\'' && i != '1' && i != '0' && i != '^') {
-			std::cerr << "[ERROR] Invalid character '" << i << '\'' << std::endl;
-			return false;
-		}
+        if (!isupper(i) && i != '(' && i != ')' && i != '+' && i != '\'' && i != '1' && i != '0' && i != '^') {
+            std::cerr << "[ERROR] Invalid character '" << i << '\'' << std::endl;
+            return false;
+        }
         // Count variable
-		else if (isupper(i))
-			var.insert(i);
-	return true;
+        else if (isupper(i))
+            var.insert(i);
+    return true;
 }
 
 // Abstract syntax tree node
 class OpNode {
-	public:
-		OpNode *l, *r;
+    public:
+        OpNode *l, *r;
 
-		OpNode(): l(nullptr), r(nullptr) {}
-		OpNode(const OpNode&) = delete;
-		virtual ~OpNode() {
-			if (l) delete l;
-			if (r) delete r;
-		}
-		OpNode& operator=(const OpNode&) = delete;
-		virtual int get() = 0;
+        OpNode(): l(nullptr), r(nullptr) {}
+        OpNode(const OpNode&) = delete;
+        virtual ~OpNode() {
+            if (l) delete l;
+            if (r) delete r;
+        }
+        OpNode& operator=(const OpNode&) = delete;
+        virtual int get() = 0;
 };
 
 // Root node
 class RootNode: public OpNode {
-	public:
-		int get() {
-			return l->get();
-		}
+    public:
+        int get() {
+            return l->get();
+        }
 };
 
 // Variable node
 class VarNode: public OpNode {
-	private:
-		char cvar;
+    private:
+        char cvar;
 
-	public:
-		VarNode(char c = 1): cvar(c) {}
-		int get() {
-			return cvar < 2 ? cvar : mvar[cvar];
-		}
+    public:
+        VarNode(char c = 1): cvar(c) {}
+        int get() {
+            return cvar < 2 ? cvar : mvar[cvar];
+        }
 };
 
 // NOT Node
 class NotNode: public OpNode {
-	public:
-		int get() {
-			return l->get() ^ 1;
-		}
+    public:
+        int get() {
+            return l->get() ^ 1;
+        }
 };
 
 // AND Node
 class AndNode: public OpNode {
-	public:
-		int get() {
-			return l->get() & r->get();
-		}
+    public:
+        int get() {
+            return l->get() & r->get();
+        }
 };
 
 // OR Node
 class OrNode: public OpNode {
-	public:
-		int get() {
-			return l->get() | r->get();
-		}
+    public:
+        int get() {
+            return l->get() | r->get();
+        }
 };
 
 // XOR Node
 class XorNode: public OpNode {
     public:
-		int get() {
-			return l->get() ^ r->get();
-		}
+        int get() {
+            return l->get() ^ r->get();
+        }
 };
 
 // Root
@@ -170,7 +170,7 @@ RootNode root;
 int prf(char c) {
     static std::unordered_map<char, int> prl = 
         {{'(', 1}, {'+', 2}, {'^', 3}, {'*', 4}, {'\'', 5}, {')', 6}};
-	return prl[c];
+    return prl[c];
 }
 
 // Explicit add AND logic
@@ -189,35 +189,35 @@ std::string cvtAL(const std::string& expr) {
 // Convert to reverse polish notation
 // O(N)
 std::string cvtRPN(const std::string& expr) {
-	std::string tmp;
-	std::stack<char> stk;
-	for (auto &i : expr)
-		if (isupper(i) || isdigit(i))
-			tmp += i;
-		else if (stk.empty() || i == '(')
-			stk.emplace(i);
-		else if (i == ')') {
-			while (!stk.empty() && stk.top() != '(') {
-				tmp += stk.top();
-				stk.pop();
-			}
+    std::string tmp;
+    std::stack<char> stk;
+    for (auto &i : expr)
+        if (isupper(i) || isdigit(i))
+            tmp += i;
+        else if (stk.empty() || i == '(')
+            stk.emplace(i);
+        else if (i == ')') {
+            while (!stk.empty() && stk.top() != '(') {
+                tmp += stk.top();
+                stk.pop();
+            }
             if (stk.empty())
                 return "[ERROR] Invalid expression";
-			stk.pop();
-		}
-		else if (prf(stk.top()) < prf(i))
-			stk.emplace(i);
-		else {
-			while (!stk.empty() && prf(stk.top()) > prf(i)) {
-				tmp += stk.top();
-				stk.pop();
-			}
-			stk.emplace(i);
-		}
-	while (!stk.empty()) {
-		tmp += stk.top();
-		stk.pop();
-	}
+            stk.pop();
+        }
+        else if (prf(stk.top()) < prf(i))
+            stk.emplace(i);
+        else {
+            while (!stk.empty() && prf(stk.top()) > prf(i)) {
+                tmp += stk.top();
+                stk.pop();
+            }
+            stk.emplace(i);
+        }
+    while (!stk.empty()) {
+        tmp += stk.top();
+        stk.pop();
+    }
     // Compress NOT logic
     std::string rtn;
     int j = 0;
@@ -232,7 +232,7 @@ std::string cvtRPN(const std::string& expr) {
         }
     if (j & 1)
         rtn += '\'';
-	return rtn;
+    return rtn;
 }
 
 // Output true value table
@@ -388,7 +388,7 @@ void ast(const std::string& err, std::stack<OpNode*>& stk) {
 // Analyze
 void analyze() {
     // Get reverse polish notation
-	std::string rpn = cvtRPN(cvtAL(input));
+    std::string rpn = cvtRPN(cvtAL(input));
     if (rpn[0] == '[') {
         std::cerr << rpn << std::endl;
         return;
