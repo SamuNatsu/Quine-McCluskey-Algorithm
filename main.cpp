@@ -31,7 +31,7 @@
 
 // Input like this: (AB'+A'B)'^C
 // ONLY uppercases are allowed to be a variable
-// You DON'T need to explicit type '*' for AND logic, and NO white spaces pls
+// You DON'T need to explicitly type in '*' for AND logic, and NO white spaces pls
 
 // How it works:
 // 1. Input expression string
@@ -173,7 +173,7 @@ int prf(char c) {
     return prl[c];
 }
 
-// Explicit add AND logic
+// Explicitly add AND logic
 // O(N)
 std::string cvtAL(const std::string& expr) {
     std::string rtn;
